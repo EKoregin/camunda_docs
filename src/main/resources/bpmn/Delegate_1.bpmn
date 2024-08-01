@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1r7dser" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.21.0">
+  <bpmn:process id="Delegate_1" name="Delegate_1" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0yq2zyt</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_0z84nm6">
+      <bpmn:incoming>Flow_1g4057j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0yq2zyt" sourceRef="StartEvent_1" targetRef="Activity_1njcpwg" />
+    <bpmn:sequenceFlow id="Flow_17ffe71" sourceRef="Activity_00l7n7b" targetRef="Activity_13uz1mo" />
+    <bpmn:userTask id="Activity_00l7n7b" name="Approve" camunda:assignee="${APPROVER}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Date" label="Date" type="date" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1yns5yi</bpmn:incoming>
+      <bpmn:outgoing>Flow_17ffe71</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1yns5yi" sourceRef="Activity_1njcpwg" targetRef="Activity_00l7n7b" />
+    <bpmn:serviceTask id="Activity_1njcpwg" name="Update Status" camunda:asyncBefore="true" camunda:asyncAfter="true" camunda:class="com.example.workflow.process.UpdateStatus">
+      <bpmn:extensionElements>
+        <camunda:field name="status">
+          <camunda:string>APPROVING</camunda:string>
+        </camunda:field>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0yq2zyt</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yns5yi</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_13uz1mo" name="Update Status" camunda:class="com.example.workflow.process.UpdateStatus">
+      <bpmn:extensionElements>
+        <camunda:field name="status">
+          <camunda:string>APPROVED</camunda:string>
+        </camunda:field>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_17ffe71</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g4057j</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1g4057j" sourceRef="Activity_13uz1mo" targetRef="Event_0z84nm6" />
+    <bpmn:textAnnotation id="TextAnnotation_1kna7fs">
+      <bpmn:text>Status - Approving</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0rd3khn" associationDirection="None" sourceRef="Activity_1njcpwg" targetRef="TextAnnotation_1kna7fs" />
+    <bpmn:textAnnotation id="TextAnnotation_1jl429n">
+      <bpmn:text>Status - Approved</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1gg27qn" associationDirection="None" sourceRef="Activity_13uz1mo" targetRef="TextAnnotation_1jl429n" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Delegate_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0z84nm6_di" bpmnElement="Event_0z84nm6">
+        <dc:Bounds x="1022" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_08cexcd_di" bpmnElement="Activity_1njcpwg">
+        <dc:Bounds x="270" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0d0moqe" bpmnElement="Activity_13uz1mo">
+        <dc:Bounds x="860" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qu3r9x_di" bpmnElement="Activity_00l7n7b">
+        <dc:Bounds x="570" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1kna7fs_di" bpmnElement="TextAnnotation_1kna7fs">
+        <dc:Bounds x="370" y="80" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1jl429n_di" bpmnElement="TextAnnotation_1jl429n">
+        <dc:Bounds x="960" y="80" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0yq2zyt_di" bpmnElement="Flow_0yq2zyt">
+        <di:waypoint x="188" y="200" />
+        <di:waypoint x="270" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17ffe71_di" bpmnElement="Flow_17ffe71">
+        <di:waypoint x="670" y="200" />
+        <di:waypoint x="860" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yns5yi_di" bpmnElement="Flow_1yns5yi">
+        <di:waypoint x="370" y="200" />
+        <di:waypoint x="570" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g4057j_di" bpmnElement="Flow_1g4057j">
+        <di:waypoint x="960" y="200" />
+        <di:waypoint x="1022" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0rd3khn_di" bpmnElement="Association_0rd3khn">
+        <di:waypoint x="358" y="160" />
+        <di:waypoint x="395" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1gg27qn_di" bpmnElement="Association_1gg27qn">
+        <di:waypoint x="948" y="160" />
+        <di:waypoint x="985" y="121" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

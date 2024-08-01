@@ -1,5 +1,24 @@
-spring.datasource.url: jdbc:h2:file:./camunda-h2-database
+#spring.datasource.url: jdbc:h2:file:./camunda-h2-database
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/camunda_docs
+    username: postgres
+    password: postgres
+  security:
+    user:
+      name: admin
+      password: password
 
-camunda.bpm.admin-user:
-  id: admin
-  password: admin
+  liquibase:
+    enable: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+camunda:
+  bpm:
+    database:
+      schema-update: false
+    auto-deployment-enable: false
+    admin-user:
+      id: demo
+      password: demo

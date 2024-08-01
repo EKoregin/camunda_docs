@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: install-camunda
+      author: ekoregin
+      customChange:
+        class: org.ekoregin.workflow.liquibase.InstallCamunda
+  - changeSet:
+      id: deploy_delegate_1
+      author: ekoregin
+      customChange:
+        class: org.ekoregin.workflow.liquibase.DeployProcess
+        param:
+          name: file
+          value: bpmn/Delegate_1.bpmn
+  - changeSet:
+      id: deploy_delegate_2
+      author: ekoregin
+      customChange:
+        class: org.ekoregin.workflow.liquibase.DeployProcess
+        param:
+          name: file
+          value: bpmn/Delegate_2.bpmn
