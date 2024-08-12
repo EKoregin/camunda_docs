@@ -3,6 +3,7 @@ package org.ekoregin.workflow.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ekoregin.workflow.dto.VacationClaimDto;
+import org.ekoregin.workflow.model.UserAction;
 import org.ekoregin.workflow.service.VacationClaimService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +47,11 @@ public class VacationClaimController {
     @GetMapping("/{id}")
     public VacationClaimDto findById(@PathVariable("id") UUID id) {
         return vacationClaimService.findById(id);
+    }
+
+    @GetMapping("/{id}/actions")
+    public List<UserAction> getActions(@PathVariable UUID id) throws IOException {
+        return vacationClaimService.getActions(id);
     }
 
     @DeleteMapping("/{id}")
