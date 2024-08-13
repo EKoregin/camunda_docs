@@ -5,8 +5,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.dmn.engine.DmnDecision;
+import org.camunda.bpm.dmn.engine.DmnDecisionRuleResult;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.dmn.engine.DmnEngine;
+import org.camunda.bpm.engine.variable.VariableMap;
+import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.ekoregin.workflow.dto.VacationClaimDto;
@@ -38,7 +41,8 @@ public class VacationClaimService {
 
     private final DmnEngine dmnEngine;
     private DmnDecision actionsDecision;
-    @Value("classpath:dmn/Actions.dmn")
+
+    @Value("classpath:dmn/Actions2.dmn")
     private Resource actionsDmn;
 
 
@@ -46,54 +50,56 @@ public class VacationClaimService {
     public void initActionsDmn() throws IOException {
         try (InputStream input = new BufferedInputStream(actionsDmn.getInputStream())) {
             DmnModelInstance modelInstance = Dmn.readModelFromStream(input);
-            actionsDecision = dmnEngine.parseDecision("Actions", modelInstance);
+            actionsDecision = dmnEngine.parseDecision("Actions2", modelInstance);
         }
     }
 
-    public List<UserAction> getActions(UUID claimId) throws IOException {
-        VacationClaimDto claim = findById(claimId);
+    public List<UserAction> getActions(UUID claimId) {
+        VacationClaim claim = findById(claimId);
         ClaimStatus status = claim.getStatus();
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("status", status.name());
 
+        log.info("Claim status: {}", status.name());
+
+
         DmnDecisionTableResult result = dmnEngine.evaluateDecisionTable(actionsDecision, variables);
+
         List<String> actions = result.collectEntries("action");
+        log.info("Actions result: {}", actions);
         if (actions == null) {
             return new ArrayList<>();
         }
         return actions.stream().map(UserAction::valueOf).collect(Collectors.toList());
     }
 
-    public VacationClaimDto findById(@NonNull UUID id) {
-        VacationClaim vacationClaim = vacationClaimRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Vacation claim with id " + id + " not found")
-        );
-        return vacationClaimMapper.toDto(vacationClaim);
+    public VacationClaim findById(@NonNull UUID id) {
+        return vacationClaimRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Vacation claim with id " + id + " not found"));
     }
 
-    public List<VacationClaimDto> findAll() {
+    public List<VacationClaim> findAll() {
         List<VacationClaim> claims = new ArrayList<>();
         vacationClaimRepository.findAll().forEach(claims::add);
-        return vacationClaimMapper.toDtoList(claims);
+        return claims;
     }
 
-    public VacationClaimDto create(VacationClaimDto vacationClaimDto) {
+    public VacationClaim create(VacationClaimDto vacationClaimDto) {
         VacationClaim vacationClaim = vacationClaimMapper.toEntity(vacationClaimDto);
         vacationClaim.setNew(true);
         vacationClaim.setId(UUID.randomUUID());
         vacationClaim.setCreatedAt(LocalDateTime.now());
         vacationClaim.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-        return vacationClaimMapper.toDto(vacationClaimRepository.save(vacationClaim));
+        return vacationClaimRepository.save(vacationClaim);
     }
 
-    public VacationClaimDto update(VacationClaimDto vacationClaimDto, UUID id) {
+    public VacationClaim update(VacationClaim vacationClaim, UUID id) {
         vacationClaimRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Vacation claim with id " + id + " not found")
         );
-        VacationClaim vacationClaim = vacationClaimMapper.toEntity(vacationClaimDto);
         vacationClaim.setNew(false);
-        return vacationClaimMapper.toDto(vacationClaimRepository.save(vacationClaim));
+        return vacationClaimRepository.save(vacationClaim);
     }
 
     public void deleteById(UUID id) {

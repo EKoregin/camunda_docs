@@ -20,3 +20,11 @@ databaseChangeLog:
         param:
           name: file
           value: bpmn/Delegate_2.bpmn
+  - changeSet:
+      id: deploy_vacation_claim_process
+      author: ekoregin
+      customChange:
+        class: org.ekoregin.workflow.liquibase.DeployProcess
+        param:
+          name: file
+          value: bpmn/VacationClaimProcess.bpmn

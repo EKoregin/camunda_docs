@@ -90,12 +90,11 @@ class VacationClaimServiceTest {
     @Test
     public void createTest() {
         when(vacationClaimMapper.toEntity(vacationClaimDto)).thenReturn(vacationClaim);
-        when(vacationClaimMapper.toDto(vacationSavedClaim)).thenReturn(vacationClaimSavedDto);
         when(vacationClaimRepository.save(vacationClaim)).thenReturn(vacationSavedClaim);
 
-        VacationClaimDto actualResult = vacationClaimService.create(vacationClaimDto);
+        VacationClaim actualResult = vacationClaimService.create(vacationClaimDto);
 
-        assertEquals(vacationClaimSavedDto, actualResult);
+        assertEquals(vacationSavedClaim, actualResult);
         verify(vacationClaimRepository).save(vacationClaim);
     }
 
@@ -105,20 +104,19 @@ class VacationClaimServiceTest {
         vacationClaim.setStatus(ClaimStatus.APPROVED);
 
         when(vacationClaimRepository.findById(CLAIM_ID)).thenReturn(Optional.ofNullable(vacationSavedClaim));
-        when(vacationClaimMapper.toEntity(vacationClaimDto)).thenReturn(vacationClaim);
-        when(vacationClaimMapper.toDto(vacationSavedClaim)).thenReturn(vacationClaimSavedDto);
         when(vacationClaimRepository.save(vacationClaim)).thenReturn(vacationSavedClaim);
 
-        VacationClaimDto actualResult = vacationClaimService.update(vacationClaimDto, CLAIM_ID);
+        VacationClaim actualResult = vacationClaimService.update(vacationClaim, CLAIM_ID);
 
-        assertEquals(vacationClaimSavedDto, actualResult);
+        assertEquals(vacationSavedClaim, actualResult);
     }
 
     @Test
     public void updateWhenNotFound() {
         String errMessage = String.format("Vacation claim with id %s not found", CLAIM_ID);
 
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> vacationClaimService.update(vacationClaimDto, CLAIM_ID));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+                () -> vacationClaimService.update(vacationClaim, CLAIM_ID));
 
         assertEquals(errMessage, exception.getMessage());
     }
@@ -127,11 +125,10 @@ class VacationClaimServiceTest {
     @Test
     public void findByIdWhenOk() {
         when(vacationClaimRepository.findById(CLAIM_ID)).thenReturn(Optional.ofNullable(vacationSavedClaim));
-        when(vacationClaimMapper.toDto(vacationSavedClaim)).thenReturn(vacationClaimSavedDto);
 
-        VacationClaimDto actualResult = vacationClaimService.findById(CLAIM_ID);
+        VacationClaim actualResult = vacationClaimService.findById(CLAIM_ID);
 
-        assertEquals(vacationClaimSavedDto, actualResult);
+        assertEquals(vacationSavedClaim, actualResult);
     }
 
     @Test
