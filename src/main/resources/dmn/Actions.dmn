@@ -10,18 +10,18 @@
       <output id="Output_1" label="Action" name="action" typeRef="string" />
       <rule id="DecisionRule_1wy4rpe">
         <inputEntry id="UnaryTests_14aubq3">
-          <text>APPROVING</text>
+          <text>"APPROVING"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1c4whoh">
-          <text>APPROVE</text>
+          <text>"APPROVE"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_051rqpy">
         <inputEntry id="UnaryTests_075fbp6">
-          <text>APPROVING</text>
+          <text>"APPROVING"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0joh4nk">
-          <text>REJECT</text>
+          <text>"REJECT"</text>
         </outputEntry>
       </rule>
     </decisionTable>

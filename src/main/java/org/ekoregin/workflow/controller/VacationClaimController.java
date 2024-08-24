@@ -2,7 +2,9 @@ package org.ekoregin.workflow.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ekoregin.workflow.dto.TaskDto;
 import org.ekoregin.workflow.dto.VacationClaimDto;
+import org.ekoregin.workflow.mapper.TaskMapper;
 import org.ekoregin.workflow.mapper.VacationClaimMapper;
 import org.ekoregin.workflow.model.UserAction;
 import org.ekoregin.workflow.model.VacationClaim;
@@ -16,10 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +34,7 @@ public class VacationClaimController {
     private final VacationClaimService vacationClaimService;
     private final VacationClaimWorkflowService vacationClaimWorkflowService;
     private final VacationClaimMapper vacationClaimMapper;
+    private final TaskMapper taskMapper;
 
     @PostMapping("/{id}/process")
     public void startWorkFlow(@PathVariable("id") String id) {
@@ -69,5 +72,15 @@ public class VacationClaimController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") UUID id) {
         vacationClaimService.deleteById(id);
+    }
+
+    @GetMapping("/tasks")
+    public List<TaskDto> getTasks() {
+        return taskMapper.toListDto(vacationClaimWorkflowService.findMyTasks());
+    }
+
+    @PutMapping("/task/{id}")
+    public void setClaimAction(@PathVariable("id") UUID id, @RequestParam("action") String userAction) {
+        vacationClaimService.setClaimAction(id, userAction);
     }
 }

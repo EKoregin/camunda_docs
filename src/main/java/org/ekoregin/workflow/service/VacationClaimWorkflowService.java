@@ -5,10 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class VacationClaimWorkflowService {
     private final RuntimeService runtimeService;
     private final TaskService taskService;
 
+
     public void startMyWorkflow(@NonNull UUID claimId) {
         String me = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("User {} start process {}", me, PROCESS_ID);
@@ -34,5 +38,14 @@ public class VacationClaimWorkflowService {
         context.put(APPROVER, me);
 
         runtimeService.startProcessInstanceByKey(PROCESS_ID, context);
+    }
+
+    public List<Task> findMyTasks() {
+        String me = SecurityContextHolder.getContext().getAuthentication().getName();
+        return new ArrayList<>(taskService.createTaskQuery()
+                .taskAssignee(me)
+                .active()
+                .orderByTaskCreateTime().desc()
+                .list());
     }
 }

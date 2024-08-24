@@ -5,11 +5,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.dmn.engine.DmnDecision;
-import org.camunda.bpm.dmn.engine.DmnDecisionRuleResult;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.dmn.engine.DmnEngine;
-import org.camunda.bpm.engine.variable.VariableMap;
-import org.camunda.bpm.engine.variable.Variables;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.ekoregin.workflow.dto.VacationClaimDto;
@@ -31,6 +30,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.ekoregin.workflow.service.MyWorkflowVars.USER_ACTION;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,8 +42,9 @@ public class VacationClaimService {
 
     private final DmnEngine dmnEngine;
     private DmnDecision actionsDecision;
+    private final TaskService taskService;
 
-    @Value("classpath:dmn/Actions2.dmn")
+    @Value("classpath:dmn/Actions.dmn")
     private Resource actionsDmn;
 
 
@@ -50,7 +52,7 @@ public class VacationClaimService {
     public void initActionsDmn() throws IOException {
         try (InputStream input = new BufferedInputStream(actionsDmn.getInputStream())) {
             DmnModelInstance modelInstance = Dmn.readModelFromStream(input);
-            actionsDecision = dmnEngine.parseDecision("Actions2", modelInstance);
+            actionsDecision = dmnEngine.parseDecision("Actions", modelInstance);
         }
     }
 
@@ -59,7 +61,7 @@ public class VacationClaimService {
         ClaimStatus status = claim.getStatus();
 
         Map<String, Object> variables = new HashMap<>();
-        variables.put("status", status.name());
+        variables.put("Status", status.name());
 
         log.info("Claim status: {}", status.name());
 
@@ -104,5 +106,11 @@ public class VacationClaimService {
 
     public void deleteById(UUID id) {
         vacationClaimRepository.deleteById(id);
+    }
+
+    public void setClaimAction(UUID id, String userAction) {
+        Task task = taskService.createTaskQuery().taskId(String.valueOf(id)).list().get(0);
+        log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
+        taskService.complete(String.valueOf(id), Map.of(USER_ACTION, UserAction.valueOf(userAction)));
     }
 }

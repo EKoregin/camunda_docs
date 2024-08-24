@@ -9,7 +9,7 @@
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0yq2zyt" sourceRef="StartEvent_1" targetRef="Activity_1njcpwg" />
     <bpmn:sequenceFlow id="Flow_17ffe71" sourceRef="Activity_00l7n7b" targetRef="Activity_13uz1mo">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${status == 'APPROVED'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${userAction == 'APPROVE'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="Activity_00l7n7b" name="Approve" camunda:formRef="statusForm" camunda:formRefBinding="latest" camunda:assignee="${APPROVER}">
       <bpmn:extensionElements />
@@ -41,7 +41,7 @@
       <bpmn:incoming>Flow_1tsrg0l</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0psdu9p" sourceRef="Activity_00l7n7b" targetRef="Activity_0wzpher">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${status == 'REJECTED'}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${userAction == 'REJECT'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1tsrg0l" sourceRef="Activity_0wzpher" targetRef="Event_1qwu6if" />
     <bpmn:serviceTask id="Activity_0wzpher" name="Update Status" camunda:class="org.ekoregin.workflow.process.UpdateStatus">
@@ -92,16 +92,16 @@
       <bpmndi:BPMNShape id="Activity_1a1o8jm_di" bpmnElement="Activity_0wzpher">
         <dc:Bounds x="560" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_01jb8l8_di" bpmnElement="Association_01jb8l8">
-        <di:waypoint x="655" y="381" />
-        <di:waypoint x="690" y="351" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TextAnnotation_1kna7fs_di" bpmnElement="TextAnnotation_1kna7fs">
         <dc:Bounds x="370" y="80" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TextAnnotation_1jl429n_di" bpmnElement="TextAnnotation_1jl429n">
         <dc:Bounds x="960" y="80" width="100" height="41" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0mefyk2_di" bpmnElement="TextAnnotation_0mefyk2">
+        <dc:Bounds x="670" y="310" width="100" height="41" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0yq2zyt_di" bpmnElement="Flow_0yq2zyt">
@@ -120,14 +120,6 @@
         <di:waypoint x="960" y="200" />
         <di:waypoint x="1022" y="200" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_0rd3khn_di" bpmnElement="Association_0rd3khn">
-        <di:waypoint x="358" y="160" />
-        <di:waypoint x="395" y="121" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Association_1gg27qn_di" bpmnElement="Association_1gg27qn">
-        <di:waypoint x="948" y="160" />
-        <di:waypoint x="985" y="121" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0psdu9p_di" bpmnElement="Flow_0psdu9p">
         <di:waypoint x="610" y="240" />
         <di:waypoint x="610" y="380" />
@@ -136,10 +128,18 @@
         <di:waypoint x="610" y="460" />
         <di:waypoint x="610" y="532" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_0mefyk2_di" bpmnElement="TextAnnotation_0mefyk2">
-        <dc:Bounds x="670" y="310" width="100" height="41" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0rd3khn_di" bpmnElement="Association_0rd3khn">
+        <di:waypoint x="358" y="160" />
+        <di:waypoint x="395" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1gg27qn_di" bpmnElement="Association_1gg27qn">
+        <di:waypoint x="948" y="160" />
+        <di:waypoint x="985" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01jb8l8_di" bpmnElement="Association_01jb8l8">
+        <di:waypoint x="655" y="381" />
+        <di:waypoint x="690" y="351" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
