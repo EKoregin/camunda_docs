@@ -8,6 +8,7 @@ import org.camunda.bpm.dmn.engine.DmnDecision;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.dmn.engine.DmnEngine;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.exception.NotFoundException;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -108,9 +109,16 @@ public class VacationClaimService {
         vacationClaimRepository.deleteById(id);
     }
 
-    public void setClaimAction(UUID id, String userAction) {
-        Task task = taskService.createTaskQuery().taskId(String.valueOf(id)).list().get(0);
-        log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
-        taskService.complete(String.valueOf(id), Map.of(USER_ACTION, UserAction.valueOf(userAction)));
+    public void setClaimAction(String id, UserAction userAction) {
+        List<Task> taskList = taskService.createTaskQuery().taskId(id).list();
+        if (!taskList.isEmpty()) {
+            Task task = taskList.get(0);
+            log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
+            taskService.complete(id, Map.of(USER_ACTION, userAction));
+        } else {
+            String errMessage = "Task with id %s not found".formatted(id);
+            log.info(errMessage);
+            throw new NotFoundException(errMessage);
+        }
     }
 }

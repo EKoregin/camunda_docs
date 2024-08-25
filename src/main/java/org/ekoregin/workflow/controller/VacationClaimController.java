@@ -81,6 +81,6 @@ public class VacationClaimController {
 
     @PutMapping("/task/{id}")
     public void setClaimAction(@PathVariable("id") UUID id, @RequestParam("action") String userAction) {
-        vacationClaimService.setClaimAction(id, userAction);
+        vacationClaimService.setClaimAction(String.valueOf(id), UserAction.valueOf(userAction));
     }
 }
