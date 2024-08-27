@@ -1,0 +1,28 @@
+{
+  "components": [
+    {
+      "label": "Status",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1mr4nux",
+        "columns": null
+      },
+      "id": "Field_0fxsu3k",
+      "key": "status",
+      "description": "Set claim status",
+      "validate": {
+        "pattern": "APPROVED|REJECTED",
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "statusForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.25.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21.0",
+  "schemaVersion": 16
+}

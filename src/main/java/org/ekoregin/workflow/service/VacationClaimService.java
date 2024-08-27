@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.dmn.engine.DmnDecision;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.dmn.engine.DmnEngine;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.exception.NotFoundException;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.ekoregin.workflow.dto.VacationClaimDto;
@@ -28,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.ekoregin.workflow.service.MyWorkflowVars.USER_ACTION;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,6 +43,8 @@ public class VacationClaimService {
 
     private final DmnEngine dmnEngine;
     private DmnDecision actionsDecision;
+    private final TaskService taskService;
+
     @Value("classpath:dmn/Actions.dmn")
     private Resource actionsDmn;
 
@@ -50,53 +57,67 @@ public class VacationClaimService {
         }
     }
 
-    public List<UserAction> getActions(UUID claimId) throws IOException {
-        VacationClaimDto claim = findById(claimId);
+    public List<UserAction> getActions(UUID claimId) {
+        VacationClaim claim = findById(claimId);
         ClaimStatus status = claim.getStatus();
 
         Map<String, Object> variables = new HashMap<>();
-        variables.put("status", status.name());
+        variables.put("Status", status.name());
+
+        log.info("Claim status: {}", status.name());
+
 
         DmnDecisionTableResult result = dmnEngine.evaluateDecisionTable(actionsDecision, variables);
+
         List<String> actions = result.collectEntries("action");
+        log.info("Actions result: {}", actions);
         if (actions == null) {
             return new ArrayList<>();
         }
         return actions.stream().map(UserAction::valueOf).collect(Collectors.toList());
     }
 
-    public VacationClaimDto findById(@NonNull UUID id) {
-        VacationClaim vacationClaim = vacationClaimRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Vacation claim with id " + id + " not found")
-        );
-        return vacationClaimMapper.toDto(vacationClaim);
+    public VacationClaim findById(@NonNull UUID id) {
+        return vacationClaimRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Vacation claim with id " + id + " not found"));
     }
 
-    public List<VacationClaimDto> findAll() {
+    public List<VacationClaim> findAll() {
         List<VacationClaim> claims = new ArrayList<>();
         vacationClaimRepository.findAll().forEach(claims::add);
-        return vacationClaimMapper.toDtoList(claims);
+        return claims;
     }
 
-    public VacationClaimDto create(VacationClaimDto vacationClaimDto) {
+    public VacationClaim create(VacationClaimDto vacationClaimDto) {
         VacationClaim vacationClaim = vacationClaimMapper.toEntity(vacationClaimDto);
         vacationClaim.setNew(true);
         vacationClaim.setId(UUID.randomUUID());
         vacationClaim.setCreatedAt(LocalDateTime.now());
         vacationClaim.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-        return vacationClaimMapper.toDto(vacationClaimRepository.save(vacationClaim));
+        return vacationClaimRepository.save(vacationClaim);
     }
 
-    public VacationClaimDto update(VacationClaimDto vacationClaimDto, UUID id) {
+    public VacationClaim update(VacationClaim vacationClaim, UUID id) {
         vacationClaimRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Vacation claim with id " + id + " not found")
         );
-        VacationClaim vacationClaim = vacationClaimMapper.toEntity(vacationClaimDto);
         vacationClaim.setNew(false);
-        return vacationClaimMapper.toDto(vacationClaimRepository.save(vacationClaim));
+        return vacationClaimRepository.save(vacationClaim);
     }
 
     public void deleteById(UUID id) {
         vacationClaimRepository.deleteById(id);
+    }
+
+    public void setClaimAction(String id, UserAction userAction) {
+        Task task = taskService.createTaskQuery().taskId(id).singleResult();
+        if (task != null) {
+            log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
+            taskService.complete(id, Map.of(USER_ACTION, userAction));
+        } else {
+            String errMessage = "Task with id %s not found".formatted(id);
+            log.info(errMessage);
+            throw new NotFoundException(errMessage);
+        }
     }
 }

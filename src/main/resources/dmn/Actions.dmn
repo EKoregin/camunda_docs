@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1jeo297" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.6.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
-  <decision id="Decision_0emppvg" name="Actions">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_1jeo297" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.18.0">
+  <decision id="Actions" name="Actions" camunda:historyTimeToLive="180">
     <decisionTable id="DecisionTable_0eddg7o" hitPolicy="COLLECT">
       <input id="Input_1" camunda:inputVariable="status">
         <inputExpression id="InputExpression_1" typeRef="string">
@@ -10,26 +10,26 @@
       <output id="Output_1" label="Action" name="action" typeRef="string" />
       <rule id="DecisionRule_1wy4rpe">
         <inputEntry id="UnaryTests_14aubq3">
-          <text>APPROVING</text>
+          <text>"APPROVING"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1c4whoh">
-          <text>APPROVE</text>
+          <text>"APPROVE"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_051rqpy">
         <inputEntry id="UnaryTests_075fbp6">
-          <text>APPROVING</text>
+          <text>"APPROVING"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0joh4nk">
-          <text>REJECT</text>
+          <text>"REJECT"</text>
         </outputEntry>
       </rule>
     </decisionTable>
   </decision>
   <dmndi:DMNDI>
     <dmndi:DMNDiagram>
-      <dmndi:DMNShape dmnElementRef="Decision_0emppvg">
-        <dc:Bounds height="80" width="180" x="1010" y="290" />
+      <dmndi:DMNShape dmnElementRef="Actions">
+        <dc:Bounds height="80" width="180" x="160" y="80" />
       </dmndi:DMNShape>
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
