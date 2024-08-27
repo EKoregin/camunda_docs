@@ -81,6 +81,6 @@ public class VacationClaimController {
 
     @PostMapping("/task/{id}")
     public void completeTask(@PathVariable("id") UUID id, @RequestParam("action") UserAction userAction) {
-        vacationClaimService.setClaimAction(String.valueOf(id), userAction);
+        vacationClaimService.completeTask(String.valueOf(id), userAction);
     }
 }
