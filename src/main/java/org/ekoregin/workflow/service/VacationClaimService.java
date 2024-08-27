@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.dmn.engine.DmnDecision;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.dmn.engine.DmnEngine;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.exception.NotFoundException;
 import org.camunda.bpm.engine.task.Task;
@@ -31,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.ekoregin.workflow.service.MyWorkflowVars.CLAIM_ID;
 import static org.ekoregin.workflow.service.MyWorkflowVars.USER_ACTION;
 
 @Slf4j
@@ -44,6 +46,7 @@ public class VacationClaimService {
     private final DmnEngine dmnEngine;
     private DmnDecision actionsDecision;
     private final TaskService taskService;
+    private final RuntimeService runtimeService;
 
     @Value("classpath:dmn/Actions.dmn")
     private Resource actionsDmn;
@@ -109,15 +112,24 @@ public class VacationClaimService {
         vacationClaimRepository.deleteById(id);
     }
 
-    public void setClaimAction(String id, UserAction userAction) {
+    public void completeTask(String id, UserAction userAction) {
         Task task = taskService.createTaskQuery().taskId(id).singleResult();
+
         if (task != null) {
             log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
+            Object claimId = runtimeService.getVariable(task.getExecutionId(), CLAIM_ID);
+            log.info("Claim ID: " + claimId);
             taskService.complete(id, Map.of(USER_ACTION, userAction));
         } else {
             String errMessage = "Task with id %s not found".formatted(id);
             log.info(errMessage);
             throw new NotFoundException(errMessage);
         }
+    }
+
+    public VacationClaim findClaimByTaskId(String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        Object claimId = runtimeService.getVariable(task.getExecutionId(), CLAIM_ID);
+        return findById((UUID) claimId);
     }
 }
