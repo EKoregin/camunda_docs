@@ -110,9 +110,8 @@ public class VacationClaimService {
     }
 
     public void setClaimAction(String id, UserAction userAction) {
-        List<Task> taskList = taskService.createTaskQuery().taskId(id).list();
-        if (!taskList.isEmpty()) {
-            Task task = taskList.get(0);
+        Task task = taskService.createTaskQuery().taskId(id).singleResult();
+        if (task != null) {
             log.info("Complete Task: id - {}, assignee - {}, name - {}. Set action: {}", task.getId(), task.getAssignee(), task.getName(), userAction);
             taskService.complete(id, Map.of(USER_ACTION, userAction));
         } else {

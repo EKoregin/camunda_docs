@@ -79,8 +79,8 @@ public class VacationClaimController {
         return taskMapper.toListDto(vacationClaimWorkflowService.findMyTasks());
     }
 
-    @PutMapping("/task/{id}")
-    public void setClaimAction(@PathVariable("id") UUID id, @RequestParam("action") String userAction) {
-        vacationClaimService.setClaimAction(String.valueOf(id), UserAction.valueOf(userAction));
+    @PostMapping("/task/{id}")
+    public void completeTask(@PathVariable("id") UUID id, @RequestParam("action") UserAction userAction) {
+        vacationClaimService.setClaimAction(String.valueOf(id), userAction);
     }
 }
